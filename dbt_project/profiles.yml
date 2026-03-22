@@ -1,0 +1,21 @@
+pharmachat:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DBT_HOST', 'localhost') }}"
+      port: 5433
+      user: "{{ env_var('DBT_USER', 'clinicaluser') }}"
+      password: "{{ env_var('DBT_PASSWORD', 'clinical') }}"
+      dbname: "{{ env_var('DBT_DBNAME', 'clinicaldb') }}"
+      schema: silver
+      threads: 4
+    prod:
+      type: postgres
+      host: "{{ env_var('DBT_HOST') }}"
+      port: 5433
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_PASSWORD') }}"
+      dbname: "{{ env_var('DBT_DBNAME') }}"
+      schema: silver
+      threads: 8
