@@ -1,0 +1,92 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: "Bronze layer: raw JSON from ClinicalTrials.gov API"
+    tables:
+      - name: clinical_trials
+        description: "Raw trial records exactly as ingested"
+        freshness:
+          warn_after: {count: 25, period: hour}
+          error_after: {count: 49, period: hour}
+        loaded_at_field: ingested_at
+        columns:
+          - name: nct_id
+            description: "ClinicalTrials.gov unique identifier"
+            tests: [not_null]
+          - name: raw_json
+            tests: [not_null]
+
+models:
+  - name: int_trials_cleaned
+    description: >
+      Silver layer: cleaned and typed clinical trial records.
+      One row per NCT ID. These tests gate what data enters the Gold layer
+      and ultimately the LLM's context window.
+    config:
+      tags: ['silver', 'daily', 'quality-gate']
+  
+  - name: enrollment_count
+    description: "Must be positive or NULL"
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "enrollment_count >= 0 OR enrollment_count IS NULL"
+
+    columns:
+      - name: nct_id
+        description: "ClinicalTrials.gov unique identifier — primary key"
+        tests:
+          - unique
+          - not_null
+
+      - name: title
+        description: "Trial brief title — must be non-empty"
+        tests:
+          - not_null
+          - dbt_utils.not_empty_string
+
+      - name: status
+        description: "Overall trial status — must be a known value"
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 'COMPLETED'
+                - 'RECRUITING'
+                - 'ACTIVE_NOT_RECRUITING'
+                - 'NOT_YET_RECRUITING'
+                - 'TERMINATED'
+                - 'WITHDRAWN'
+                - 'SUSPENDED'
+                - 'UNKNOWN'
+                - 'ENROLLING_BY_INVITATION'
+                - 'APPROVED_FOR_MARKETING'
+                - 'NO_LONGER_AVAILABLE'
+                - 'TEMPORARILY_NOT_AVAILABLE'
+                - 'WITHHELD'
+                - 'AVAILABLE'
+                - 'EXPANDED_ACCESS'
+              severity: warn        # Warn (not error) to handle new status values gracefully
+
+      - name: phase_num
+        description: "Clinical phase 1-4"
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4]
+              severity: warn
+              quote: false
+
+      - name: ingested_at
+        description: "Ingestion timestamp — must exist"
+        tests:
+          - not_null:
+              severity: error
+
+    tests:
+      # Freshness check: alert if no new data in 48 hours
+      - dbt_utils.recency:
+          datepart: hour
+          field: ingested_at
+          interval: 48
+          severity: warn

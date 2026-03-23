@@ -1,0 +1,34 @@
+keyword,therapeutic_area,disease_category
+diabetes,Endocrinology,Metabolic Disease
+insulin,Endocrinology,Metabolic Disease
+glucose,Endocrinology,Metabolic Disease
+lung cancer,Oncology,Neoplasm
+tumor,Oncology,Neoplasm
+carcinoma,Oncology,Neoplasm
+lymphoma,Oncology,Neoplasm
+leukemia,Oncology,Neoplasm
+melanoma,Oncology,Neoplasm
+alzheimer,Neurology,Neurological Disorder
+dementia,Neurology,Neurological Disorder
+parkinson,Neurology,Neurological Disorder
+multiple sclerosis,Neurology,Neurological Disorder
+cardiovascular,Cardiology,Cardiovascular Disease
+heart failure,Cardiology,Cardiovascular Disease
+hypertension,Cardiology,Cardiovascular Disease
+coronary,Cardiology,Cardiovascular Disease
+stroke,Cardiology,Cardiovascular Disease
+obesity,Endocrinology,Metabolic Disease
+bmi,Endocrinology,Metabolic Disease
+covid,Infectious Disease,Viral Infection
+sars,Infectious Disease,Viral Infection
+influenza,Infectious Disease,Viral Infection
+hiv,Infectious Disease,Viral Infection
+asthma,Pulmonology,Respiratory Disease
+copd,Pulmonology,Respiratory Disease
+depression,Psychiatry,Mental Health
+anxiety,Psychiatry,Mental Health
+schizophrenia,Psychiatry,Mental Health
+arthritis,Rheumatology,Musculoskeletal
+lupus,Rheumatology,Autoimmune Disease
+crohn,Gastroenterology,Inflammatory Disease
+colitis,Gastroenterology,Inflammatory Disease
