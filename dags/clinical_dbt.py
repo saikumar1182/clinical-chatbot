@@ -38,7 +38,7 @@ profile_config = ProfileConfig(
         conn_id="clinical_postgres",        # Created by airflow-init on startup
         profile_args={
             "schema": "silver",
-            "dbname": os.getenv("POSTGRES_DB", "clinical"),
+            "dbname": os.getenv("POSTGRES_DB"),
         },
     ),
 )
@@ -52,8 +52,8 @@ default_args = {
     "owner": "data-engineering",
     "retries": 2,
     "retry_delay": timedelta(minutes=3),
-    "email_on_failure": True,
-    "email": ["data-alerts@clinicalchat.local"],
+    "email_on_failure": False,
+    "email_on_retry": False,
 }
 
 
@@ -79,7 +79,7 @@ default_args = {
 **Cosmos generates these tasks automatically from dbt_project/**:
 ```
 seed.condition_categories
-  └── bronze.stg_raw_trials
+  └── raw.stg_raw_trials
         └── silver.int_trials_cleaned
               ├── silver.test.not_null_nct_id
               ├── silver.test.unique_nct_id

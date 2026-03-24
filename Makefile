@@ -4,11 +4,14 @@ up:                    ## Start all services (postgres + app + airflow)
 down:                  ## Stop all services
 	docker compose down
 
-rebuild:               ## Rebuild app image only
-	docker compose up -d --build app
+build:               ## Build all services
+	docker compose build --no-cache
 
 logs:                  ## Tail all logs
 	docker compose logs -f
+
+clean:                 ## Remove all volumes (DELETES ALL DATA)
+	docker compose down -v
 
 # ── Airflow ──────────────────────────────────────────────────
 airflow-trigger-ingest: ## Manually trigger ingestion DAG now
@@ -43,6 +46,3 @@ test-dags:             ## Run only DAG unit tests
 eval:                  ## Run Weave eval (or trigger DAG 4)
 	docker compose exec airflow-scheduler \
 	  airflow dags trigger clinical_eval_monitor
-
-clean:                 ## Remove all volumes (DELETES ALL DATA)
-	docker compose down -v

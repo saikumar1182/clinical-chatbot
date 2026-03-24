@@ -29,10 +29,10 @@ x-airflow-common: &airflow-common
 
     AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
     AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    AWS_REGION: ${AWS_REGION:-us-east-1}
+    AWS_REGION: ${AWS_REGION}
     BEDROCK_MODEL_ID: ${BEDROCK_MODEL_ID:-anthropic.claude-3-sonnet-20240229-v1:0}
     WANDB_API_KEY: ${WANDB_API_KEY}
-    WEAVE_PROJECT: ${WEAVE_PROJECT:-clinicalchat-qa}
+    WEAVE_PROJECT: ${WEAVE_PROJECT}
 
     DBT_HOST: postgres
     DBT_USER: ${POSTGRES_USER}

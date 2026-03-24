@@ -21,16 +21,13 @@ models:
     bronze:
       +materialized: view
       +schema: raw
-      +tags: ['bronze', 'daily']
     silver:
       +materialized: incremental
       +schema: silver
-      +tags: ['silver', 'daily']
       +on_schema_change: append_new_columns
     gold:
       +materialized: table
       +schema: gold
-      +tags: ['gold', 'daily']
 
 seeds:
   clinical_chat:

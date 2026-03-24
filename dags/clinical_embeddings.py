@@ -16,7 +16,8 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timedelta
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
+
 
 logger = logging.getLogger(__name__)
 
@@ -41,8 +42,8 @@ def _chunk_list(lst: list, n: int) -> list[list]:
         "owner": "data-engineering",
         "retries": 3,
         "retry_delay": timedelta(minutes=2),
-        "email_on_failure": True,
-        "email": ["data-alerts@clinicalchat.local"],
+        "email_on_failure": False,
+        "email_on_retry": False,
     },
     tags=["clinical", "embeddings", "vectors", "rag"],
     doc_md="""
@@ -50,7 +51,7 @@ def _chunk_list(lst: list, n: int) -> list[list]:
 
 **What it does**: Identifies trials in the Gold layer that don't yet have
 embeddings (or were re-ingested), chunks their text, calls Amazon Titan
-via AWS Bedrock to generate 1536-dim embeddings, and upserts them into
+via AWS Bedrock to generate 1024-dim embeddings, and upserts them into
 the `vectors.trial_chunks` pgvector table.
 
 **Triggered by**: `clinical_dbt` DAG (only runs when dbt tests pass).
@@ -125,12 +126,12 @@ def clinical_embeddings():
           3. Calls Amazon Titan Embed v2 via AWS Bedrock
           4. Upserts embeddings into vectors.trial_chunks
         """
-        from src.rag.embeddings import embed_and_store
+        from src.rag.embeddings import embed_store
 
         if not nct_id_batch:
             return {"chunks": 0, "nct_ids": 0}
 
-        chunk_count = embed_and_store(nct_ids=nct_id_batch)
+        chunk_count = embed_store(nct_ids=nct_id_batch)
         logger.info(
             f"Embedded {chunk_count} chunks for {len(nct_id_batch)} trials"
         )

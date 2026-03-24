@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 # ─────────────────────────────────────────────────────────────
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://clinical_user:clinical_pass@localhost:5432/clinical",
+    "postgresql://clinical_user:clinical_pass@localhost:5432/clinicaldb",
 )
 
 # ─────────────────────────────────────────────────────────────

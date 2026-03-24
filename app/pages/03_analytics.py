@@ -10,12 +10,12 @@ st.caption("Business intelligence built directly from the Gold layer — same da
 # ── KPI row ──────────────────────────────────────────────────
 kpis = execute_query("""
     SELECT
-        COUNT(*)                                                AS total_trials,
-        COUNT(*) FILTER (WHERE status = 'RECRUITING')          AS recruiting,
-        COUNT(*) FILTER (WHERE status = 'COMPLETED')           AS completed,
-        COUNT(*) FILTER (WHERE phase_num = 3)                  AS phase_3,
-        ROUND(AVG(enrollment_count))                           AS avg_enrollment,
-        COUNT(DISTINCT therapeutic_area)                       AS therapeutic_areas
+        COUNT(*) AS total_trials,
+        COUNT(*) FILTER (WHERE status = 'RECRUITING') AS recruiting,
+        COUNT(*) FILTER (WHERE status = 'COMPLETED') AS completed,
+        COUNT(*) FILTER (WHERE phase_num = 3) AS phase_3,
+        ROUND(AVG(enrollment_count)) AS avg_enrollment,
+        COUNT(DISTINCT therapeutic_area) AS therapeutic_areas
     FROM gold.trials_enriched
 """)[0]
 

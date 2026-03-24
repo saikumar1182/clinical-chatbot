@@ -24,15 +24,14 @@ models:
       Silver layer: cleaned and typed clinical trial records.
       One row per NCT ID. These tests gate what data enters the Gold layer
       and ultimately the LLM's context window.
+    
     config:
       tags: ['silver', 'daily', 'quality-gate']
-  
-  - name: enrollment_count
-    description: "Must be positive or NULL"
+    
     tests:
       - dbt_utils.expression_is_true:
           expression: "enrollment_count >= 0 OR enrollment_count IS NULL"
-
+    
     columns:
       - name: nct_id
         description: "ClinicalTrials.gov unique identifier — primary key"
@@ -77,11 +76,14 @@ models:
               severity: warn
               quote: false
 
+      - name: enrollment_count
+        description: "Must be positive or NULL"
+      
       - name: ingested_at
         description: "Ingestion timestamp — must exist"
         tests:
           - not_null:
-              severity: error
+                severity: error
 
     tests:
       # Freshness check: alert if no new data in 48 hours

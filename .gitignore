@@ -10,3 +10,4 @@ src/__pycache__/*
 src/ingestion/__pycache__/*
 src/db/__pycache__/*
 dags/__pycache__/*
+rag/__pycache__/*

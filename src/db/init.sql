@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS vectors.trial_chunks (
     nct_id          TEXT NOT NULL,
     chunk_index     INTEGER NOT NULL,
     chunk_text      TEXT NOT NULL,
-    embedding       vector(1536),           -- Amazon Titan Embed v2 dimensions
+    embedding       vector(1024),           -- Amazon Titan Embed v2 dimensions
     metadata        JSONB,                  -- status, phase, condition, sponsor, therapeutic_area
     embedded_at     TIMESTAMPTZ DEFAULT NOW(),
     chunk_strategy  TEXT DEFAULT 'recursive_800_120', -- Track chunking config version
