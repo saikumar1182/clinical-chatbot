@@ -10,8 +10,11 @@ build:               ## Build all services
 logs:                  ## Tail all logs
 	docker compose logs -f
 
+restart:               ## Restart all services
+	docker compose restart
+
 clean:                 ## Remove all volumes (DELETES ALL DATA)
-	docker compose down -v
+	docker compose down --remove-orphans
 
 # ── Airflow ──────────────────────────────────────────────────
 airflow-trigger-ingest: ## Manually trigger ingestion DAG now

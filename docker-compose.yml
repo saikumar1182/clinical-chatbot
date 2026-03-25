@@ -29,8 +29,8 @@ x-airflow-common: &airflow-common
 
     AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
     AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    AWS_REGION: ${AWS_REGION}
-    BEDROCK_MODEL_ID: ${BEDROCK_MODEL_ID:-anthropic.claude-3-sonnet-20240229-v1:0}
+    AWS_REGION: ${AWS_REGION:-eu-west-3}
+    BEDROCK_MODEL_ID: ${BEDROCK_MODEL_ID:-eu.anthropic.claude-sonnet-4-5-20250929-v1:0}
     WANDB_API_KEY: ${WANDB_API_KEY}
     WEAVE_PROJECT: ${WEAVE_PROJECT}
 
@@ -145,7 +145,7 @@ services:
           airflow pools set api_pool 5 "ClinicalTrials.gov — max 5 concurrent fetches" || true
 
           echo "=== Setting Airflow Variables ==="
-          airflow variables set clinical_conditions '["lung cancer"]' || true
+          airflow variables set clinical_conditions '["cancer", "diabetes", "cardiovascular", "neurology", "Alzheimer", Alcohol Abuse and Alcoholism]' || true
           airflow variables set embed_batch_size '50' || true
 
           echo "=== Airflow init complete ✅ ==="

@@ -1,8 +1,11 @@
 """Page 1: RAG Chat — Ask questions about clinical trials."""
 import streamlit as st
 from src.rag.chain import ask
-from src.prompts.registry import list_versions, get_best_version
+from src.prompts.prompts_registry import list_versions, get_best_prompt
 from src.db.connection import execute_write
+import logging
+
+
 
 st.title("🔬 Clinical Trial Chat")
 st.caption("Ask questions in plain English. Every answer is grounded in real trial data with NCT citations.")
@@ -11,8 +14,9 @@ st.caption("Ask questions in plain English. Every answer is grounded in real tri
 with st.sidebar:
     st.markdown("### ⚙️ Settings")
     versions = list_versions()
-    vlabels = {v["version"]: f"{v['version']} (score: {v['score']})" for v in versions}
-    best = get_best_version()
+    logging.info(versions)
+    vlabels = {v["version"]: f"{v['version']} (score: {v.get('score', 'N/A')})" for v in versions}
+    best = get_best_prompt()
     selected_v = st.selectbox(
         "Prompt version",
         list(vlabels.keys()),
@@ -27,18 +31,18 @@ with st.sidebar:
         st.rerun()
 
 # ── Suggested questions ──────────────────────────────────────
-with st.expander("💡 Example questions", expanded=False):
-    examples = [
-        "What is trial NCT04567890 studying?",
-        "Explain the eligibility criteria for diabetes Phase 3 trials",
-        "What are the main outcomes of completed oncology trials?",
-        "How many trials are recruiting for Alzheimer's disease?",
-        "Describe the protocol for cardiovascular trials sponsored by Pfizer",
-    ]
-    cols = st.columns(2)
-    for i, ex in enumerate(examples):
-        if cols[i % 2].button(ex, key=f"ex_{i}"):
-            st.session_state["prefill"] = ex
+# with st.expander("💡 Example questions", expanded=False):
+#     examples = [
+#         "What is trial NCT04567890 studying?",
+#         "Explain the eligibility criteria for diabetes Phase 3 trials",
+#         "What are the main outcomes of completed oncology trials?",
+#         "How many trials are recruiting for Alzheimer's disease?",
+#         "Describe the protocol for cardiovascular trials sponsored by Pfizer",
+#     ]
+#     cols = st.columns(2)
+#     for i, ex in enumerate(examples):
+#         if cols[i % 2].button(ex, key=f"ex_{i}"):
+#             st.session_state["prefill"] = ex
 
 # ── Chat history ─────────────────────────────────────────────
 if "messages" not in st.session_state:
@@ -74,7 +78,7 @@ if question := st.chat_input(prefill or "Ask about clinical trials..."):
             filters = {}
             if phase_f:
                 filters["phase"] = phase_f[0] if len(phase_f) == 1 else phase_f
-            resp = ask(question, prompt_version=selected_v, filters=filters)
+            resp = ask(question=question, prompt_version=selected_v, filters=filters)
 
         st.markdown(resp.answer)
 

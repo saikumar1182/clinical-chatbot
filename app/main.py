@@ -27,15 +27,15 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-with st.sidebar:
-    st.markdown("## ClinicalChat QA")
-    st.markdown("*Clinical trial intelligence platform*")
-    st.divider()
-    try:
-        from src.db.connection import execute_query
-        r = execute_query("SELECT COUNT(*) AS n FROM gold.trials_enriched")
-        vc = execute_query("SELECT COUNT(DISTINCT nct_id) AS n FROM vectors.trial_chunks")
-        st.success(f"{r[0]['n']:,} trials indexed")
-        st.info(f"{vc[0]['n']:,} vectors in pgvector")
-    except Exception:
-        st.error("Database not connected")
+
+st.markdown("## ClinicalChat QA")
+st.markdown("*Clinical trial intelligence platform*")
+st.divider()
+try:
+    from src.db.connection import execute_query
+    r = execute_query("SELECT COUNT(*) AS n FROM gold.trials_enriched")
+    vc = execute_query("SELECT COUNT(DISTINCT nct_id) AS n FROM vectors.trial_chunks")
+    st.success(f"{r[0]['n']:,} trials indexed")
+    st.info(f"{vc[0]['n']:,} vectors in pgvector")
+except Exception:
+    st.error("Database not connected")

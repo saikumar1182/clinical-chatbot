@@ -22,10 +22,10 @@ SPLITTER = RecursiveCharacterTextSplitter(
     length_function=len,
 )
 
-bedrock = boto3.client("bedrock-runtime", region_name=os.getenv("AWS_REGION"))
+client = boto3.client("bedrock-runtime", region_name=os.getenv("AWS_REGION"))
 
 def embed_text(text: str) -> list[float]:
-    response = bedrock.invoke_model(
+    response = client.invoke_model(
         modelId = "amazon.titan-embed-text-v2:0",
         body = json.dumps({
             "inputText": text,

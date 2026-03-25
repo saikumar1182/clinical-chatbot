@@ -11,3 +11,5 @@ src/ingestion/__pycache__/*
 src/db/__pycache__/*
 dags/__pycache__/*
 rag/__pycache__/*
+llm/__pycache__/*
+prompts/__pycache__/*

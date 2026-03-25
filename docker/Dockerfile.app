@@ -13,7 +13,7 @@ COPY --from=builder /root/.local /root/.local
 
 # Install curl for healthcheck only
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
-    && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy application code
 COPY app/ ./app/
@@ -34,6 +34,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
 
 EXPOSE 8501
 CMD ["streamlit", "run", "app/main.py", \
-     "--server.port=8501", \
-     "--server.address=0.0.0.0", \
-     "--server.headless=true"]
+  "--server.port=8501", \
+  "--server.address=0.0.0.0", \
+  "--server.headless=true"]

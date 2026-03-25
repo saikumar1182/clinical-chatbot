@@ -26,7 +26,7 @@ default_args = {
     dag_id="clinical_ingestion",
     description="Fetch ClinicalTrials.gov data → PostgreSQL Bronze",
     schedule="0 2 * * *",
-    start_date=datetime(2024, 1, 1),
+    start_date=datetime(2026, 1, 1),
     catchup=False,
     default_args=default_args,
     tags=["clinical", "ingestion", "bronze"],
@@ -34,7 +34,14 @@ default_args = {
 def clinical_ingestion():
     conditions = Variable.get(
         "clinical_conditions",
-        default_var='["lung cancer"]',
+        default_var=[
+            "cancer",
+            "diabetes",
+            "cardiovascular",
+            "neurology",
+            "Alzheimer",
+            "Alcohol Abuse and Alcoholism"
+        ],
         deserialize_json=True,
     )
 
@@ -78,7 +85,7 @@ def clinical_ingestion():
         data_interval_start = context["data_interval_start"]
         run_id = context["run_id"]
 
-        since_date = data_interval_start - timedelta(days=30)
+        since_date = data_interval_start - timedelta(days=60)
         batch_id = f"{run_id[:12]}-{condition}"
 
         logger.info(

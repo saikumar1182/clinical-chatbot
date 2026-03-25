@@ -19,10 +19,7 @@ logger = logging.getLogger(__name__)
 # ─────────────────────────────────────────────────────────────
 # DATABASE URL — resolves from env with sensible local default
 # ─────────────────────────────────────────────────────────────
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://clinical_user:clinical_pass@localhost:5432/clinicaldb",
-)
+DATABASE_URL = os.getenv("DATABASE_URL","postgresql://clinical_user:clinical_pass@localhost:5432/clinicaldb")
 
 # ─────────────────────────────────────────────────────────────
 # ENGINE — connection pool shared across the process
@@ -79,7 +76,7 @@ def execute_write(sql: str, params: dict[str, Any] | None = None) -> int:
         Row count affected
     """
     with engine.begin() as conn:
-        result = conn.execute(text(sql), params or {})
+        result = conn.execute(text(sql), params)
         return result.rowcount
 
 

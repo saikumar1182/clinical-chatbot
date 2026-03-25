@@ -21,12 +21,12 @@ kpis = execute_query("""
 
 cols = st.columns(6)
 metrics = [
-    ("📋 Total Trials",         kpis["total_trials"],        None),
-    ("🟢 Recruiting",           kpis["recruiting"],           None),
-    ("✅ Completed",             kpis["completed"],            None),
-    ("🔬 Phase 3",              kpis["phase_3"],              None),
-    ("👥 Avg Enrollment",       kpis["avg_enrollment"],       None),
-    ("🏥 Therapeutic Areas",    kpis["therapeutic_areas"],    None),
+    ("📋 Total Trials", kpis["total_trials"], None),
+    ("🟢 Recruiting", kpis["recruiting"], None),
+    ("✅ Completed", kpis["completed"], None),
+    ("🔬 Phase 3", kpis["phase_3"], None),
+    ("👥 Avg Enrollment", kpis["avg_enrollment"], None),
+    ("🏥 Therapeutic Areas", kpis["therapeutic_areas"], None),
 ]
 for col, (label, val, delta) in zip(cols, metrics):
     col.metric(label, f"{val:,}" if val else "N/A")

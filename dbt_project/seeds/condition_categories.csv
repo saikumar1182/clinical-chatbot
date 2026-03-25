@@ -2,7 +2,7 @@ keyword,therapeutic_area,disease_category
 diabetes,Endocrinology,Metabolic Disease
 insulin,Endocrinology,Metabolic Disease
 glucose,Endocrinology,Metabolic Disease
-lung cancer,Oncology,Neoplasm
+cancer,Oncology,Neoplasm
 tumor,Oncology,Neoplasm
 carcinoma,Oncology,Neoplasm
 lymphoma,Oncology,Neoplasm

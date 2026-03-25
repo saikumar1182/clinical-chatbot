@@ -41,7 +41,7 @@ def retrieve_relevent_chunks(
     if filter_by:
         for key, value in filter_by.items():
             filter_clauses.append(
-                f"metadata @> '{{ \"{key}\": {json.dumps(val)} }}'::jsonb" # JSONB containment operator
+                f"metadata @> '{{ \"{key}\": {json.dumps(value)} }}'::jsonb" # JSONB containment operator
             )
     
     where_extra = (" AND " + " AND ".join(filter_clauses)) if filter_clauses else ""
@@ -52,12 +52,12 @@ def retrieve_relevent_chunks(
             chunk_text,
             metadata,
             nct_id,
-            1  - (embedding <=> :query_embedding::vector) AS similarity
+            1 - (embedding <=> CAST(:query_embedding AS vector)) AS similarity
         FROM vectors.trial_chunks
         WHERE
-            (embedding <=> :query_embedding::vector) < :similarity_threshold
+            (embedding <=> CAST(:query_embedding AS vector)) < :similarity_threshold
             {where_extra}
-        ORDER BY embedding <=> :query_embedding::vector
+        ORDER BY embedding <=> CAST(:query_embedding AS vector)
         LIMIT :top_k
         """,
         params,
