@@ -36,11 +36,16 @@ def clinical_ingestion():
         "clinical_conditions",
         default_var=[
             "cancer",
+            "vision",
+            "urology",
+            "kidney disease",
+            "HIV/AIDS",
+            "endocrine",
+            "digestive",
             "diabetes",
             "cardiovascular",
-            "neurology",
-            "Alzheimer",
-            "Alcohol Abuse and Alcoholism"
+            "alzheimer",
+            "alcohol abuse and alcoholism"
         ],
         deserialize_json=True,
     )

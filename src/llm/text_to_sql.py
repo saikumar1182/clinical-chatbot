@@ -6,8 +6,8 @@ from __future__ import annotations
 import os
 import logging
 
-from langchain.prompts import PromptTemplate
-from langchain.schema.output_parser import StrOutputParser
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 from langchain_aws import ChatBedrock
 
 from src.db.connection import execute_query

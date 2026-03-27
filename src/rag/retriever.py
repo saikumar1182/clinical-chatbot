@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 
-from langchain.schema import Document
+from langchain_core.documents import Document 
 
 from src.db.connection import execute_query
 from src.rag.embeddings import embed_text

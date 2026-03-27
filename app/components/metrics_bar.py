@@ -11,10 +11,10 @@ def render_metrics_bar():
         from src.db.connection import execute_query
         row = execute_query("""
             SELECT
-                (SELECT COUNT(*) FROM gold.trials_enriched)              AS trials,
+                (SELECT COUNT(*) FROM gold.trials_enriched) AS trials,
                 (SELECT COUNT(*) FROM gold.trials_enriched WHERE is_active) AS active,
                 (SELECT COUNT(DISTINCT nct_id) FROM vectors.trial_chunks) AS vectorised,
-                (SELECT COUNT(*) FROM eval.traces)                        AS chat_queries
+                (SELECT COUNT(*) FROM eval.traces) AS chat_queries
         """)[0]
 
         cols = st.columns(4)

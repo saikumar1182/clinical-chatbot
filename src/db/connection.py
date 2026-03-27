@@ -35,7 +35,7 @@ engine = create_engine(
     echo=os.getenv("SQL_ECHO", "false").lower() == "true",
 )
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 
 @contextmanager
@@ -76,7 +76,7 @@ def execute_write(sql: str, params: dict[str, Any] | None = None) -> int:
         Row count affected
     """
     with engine.begin() as conn:
-        result = conn.execute(text(sql), params)
+        result = conn.execute(text(sql), params or {})
         return result.rowcount
 
 

@@ -44,10 +44,10 @@ x-airflow-common: &airflow-common
     PYTHONPATH: /opt/airflow
 
   volumes:
-    - ./dags:/opt/airflow/dags
     - ./dbt_project:/opt/airflow/dbt_project
     - ./src:/opt/airflow/src
     - ./eval_datasets:/opt/airflow/eval_datasets
+    - ./dags:/opt/airflow/dags
     - airflow_logs:/opt/airflow/logs
     - airflow_plugins:/opt/airflow/plugins
 
@@ -145,7 +145,7 @@ services:
           airflow pools set api_pool 5 "ClinicalTrials.gov — max 5 concurrent fetches" || true
 
           echo "=== Setting Airflow Variables ==="
-          airflow variables set clinical_conditions '["cancer", "diabetes", "cardiovascular", "neurology", "Alzheimer", Alcohol Abuse and Alcoholism]' || true
+          airflow variables set clinical_conditions '["cancer", "vision", "urology", "kidney disease", "HIV/AIDS", "endocrine", "digestive", "diabetes", "cardiovascular", "alzheimer", "alcohol abuse and alcoholism"]' || true
           airflow variables set embed_batch_size '50' || true
 
           echo "=== Airflow init complete ✅ ==="

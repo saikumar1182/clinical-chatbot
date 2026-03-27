@@ -10,8 +10,8 @@ import time
 import uuid
 from dataclasses import dataclass
 
-from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
-from langchain.schema.output_parser import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 from langchain_aws import ChatBedrock
 
 from src.llm.router import route_query, QueryRoute
@@ -65,6 +65,42 @@ def _format_context(docs: list) -> str:
     return "\n\n---\n\n".join(parts)
 
 
+def _format_sql_result(result) -> str:
+    """Format SQL results safely for prompt context."""
+    if result is None:
+        return "No rows returned."
+
+    if isinstance(result, str):
+        return result.strip() or "No rows returned."
+
+    if isinstance(result, (int, float, bool)):
+        return str(result)
+
+    if isinstance(result, dict):
+        return "\n".join(f"{k}: {v}" for k, v in result.items())
+
+    if isinstance(result, (list, tuple)):
+        if not result:
+            return "No rows returned."
+
+        lines = []
+        for i, row in enumerate(result[:50], start=1):
+            if isinstance(row, dict):
+                line = ", ".join(f"{k}={v}" for k, v in row.items())
+            elif isinstance(row, (list, tuple)):
+                line = ", ".join(str(x) for x in row)
+            else:
+                line = str(row)
+            lines.append(f"{i}. {line}")
+
+        if len(result) > 50:
+            lines.append(f"... and {len(result) - 50} more rows")
+
+        return "\n".join(lines)
+
+    return str(result)
+
+
 def ask(
     question: str,
     prompt_version: str = "v4",
@@ -80,7 +116,8 @@ def ask(
             answer="""I am specialised in clinical trial data only.
             I can only answer questions about clinical trials. Please ask a question about clinical trials.""",
             sources=[],
-            query_type="Out of Scope",
+            query_type=query_type.value,
+            sql_query=None,
             prompt_version=prompt_version,
             trace_id=trace_id,
             latency_ms=0,
@@ -90,10 +127,24 @@ def ask(
     
     if query_type == QueryRoute.SQL:
         from src.llm.text_to_sql import execute_text_to_sql
-        sql_query, result = execute_text_to_sql(question)
-        context_text = f"SQL Query Result: \n{sql_query}"
+        result, sql_query = execute_text_to_sql(question)
+        context_text = (
+            f"SQL Query:\n{sql_query}\n\n"
+            f"SQL Result:\n{_format_sql_result(result)}"
+        )
+
+        logger.info("SQL Query executed: %s", sql_query)
+        logger.info("SQL Result: %s", result)
     else:
-        docs = retrieve_relevent_chunks(query=question, top_k=5, filter_by=filters, similarity_threshold=0.7)
+        docs = retrieve_relevent_chunks(
+            query=question,
+            top_k=5,
+            filter_by=filters,
+            similarity_threshold=0.3
+        )
+        logger.info(f"Retrieved {len(docs)} documents")
+        logger.info(f"Documents: {docs}")
+
         context_text = _format_context(docs)
         sources = [
             {
@@ -104,8 +155,37 @@ def ask(
             }
             for doc in docs
         ]
+        if not docs:
+            latency_ms = int((time.time() - start_time) * 1000)
+            answer = "I cannot find this in the available trial data."
+
+            try:
+                from src.evaluation.weave_tracer import log_llm_traces
+                log_llm_traces(
+                    trace_id=trace_id,
+                    question=question,
+                    answer=answer,
+                    sources=sources,
+                    prompt_version=prompt_version,
+                    latency_ms=latency_ms,
+                    context="No relevant trials found in the database.",
+                    query_type=query_type.value,
+                )
+            except Exception as e:
+                logger.error(f"Failed to log LLM traces: {e}")
+
+            return ChatResponse(
+                answer=answer,
+                sources=[],
+                query_type=query_type.value,
+                prompt_version=prompt_version,
+                sql_query=None,
+                trace_id=trace_id,
+                latency_ms=latency_ms,
+            )
     
     sys_prompt, human_text = get_prompt(prompt_version)
+
     chain = ChatPromptTemplate.from_messages([
         SystemMessagePromptTemplate.from_template(sys_prompt),
         HumanMessagePromptTemplate.from_template(human_text),
@@ -117,6 +197,29 @@ def ask(
     })
     
     latency_ms = int((time.time() - start_time) * 1000)
+
+    logger.info(f"Answer: {answer}")
+    logger.info(f"Sources: {sources}")
+    logger.info(f"Query Type: {query_type}")
+    logger.info(f"Prompt Version: {prompt_version}")
+    logger.info(f"Trace ID: {trace_id}")
+    logger.info(f"Latency: {latency_ms}")
+    logger.info(f"Context: {context_text}")
+    
+    try:
+        from src.evaluation.weave_tracer import log_llm_traces
+        log_llm_traces(
+            trace_id=trace_id,
+            question=question,
+            answer=answer,
+            sources=sources,
+            prompt_version=prompt_version,
+            latency_ms=latency_ms,
+            context=context_text,
+            query_type=query_type.value,
+        )
+    except Exception as e:
+        logger.error(f"Failed to log LLM traces: {e}")
     
     return ChatResponse(
         answer=answer,
@@ -127,13 +230,3 @@ def ask(
         trace_id=trace_id,
         latency_ms=latency_ms,
     )
-        
-
-        
-
-
-            
-        
-    
-    
-    

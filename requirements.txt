@@ -9,19 +9,11 @@ psycopg2-binary==2.9.9
 pgvector==0.2.5
 
 # ── LangChain + AWS ───────────────────────────────────────────
-langchain==0.2.6
-langchain-aws==0.1.6
-langchain-community==0.2.6
-
-boto3==1.34.106
-botocore==1.34.106
-
-# ── Embeddings + RAG ─────────────────────────────────────────
-langchain-text-splitters==0.2.2
-
-# ── Evaluation ───────────────────────────────────────────────
-wandb==0.17.2
-weave==0.50.6
+langchain-core>=0.3,<0.4
+langchain-text-splitters>=0.3,<0.4
+langchain-aws
+boto3>=1.41.0
+botocore>=1.41.0
 
 # ── Utilities ─────────────────────────────────────────────────
 python-dotenv==1.0.1

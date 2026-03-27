@@ -3,7 +3,7 @@ DAG 3: clinical_embeddings
 Schedule: None (triggered by clinical_dbt DAG)
 Purpose: Embed new/updated Gold layer trials into pgvector
 
-Replaces: embed_and_store() called inline in run_ingestion.py
+Replaces: embed_store() called inline in run_ingestion.py
 Key improvements:
   - NCT IDs batched into groups of 50, all batches run IN PARALLEL
   - bedrock_pool limits concurrent Bedrock API calls to 3 (rate limit safe)
@@ -167,7 +167,7 @@ def clinical_embeddings():
             "total_chunks": total_chunks,
             "total_trials": total_trials,
         }
-
+        
     # ── WIRING ────────────────────────────────────────────────────
     batches = get_trials_to_embed()
 
