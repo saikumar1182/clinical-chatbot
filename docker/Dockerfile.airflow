@@ -10,9 +10,12 @@ USER airflow
 
 COPY --chown=airflow:root requirements-airflow.txt /opt/airflow/requirements-airflow.txt
 COPY --chown=airflow:root requirements-dbt.txt /opt/airflow/requirements-dbt.txt
+COPY --chown=airflow:root requirements-dev.txt /opt/airflow/requirements-dev.txt
+COPY --chown=airflow:root tests/ /opt/airflow/tests/
 
 # Main Airflow env: keep Airflow + Cosmos here
-RUN pip install --no-cache-dir "apache-airflow==3.1.8" -r /opt/airflow/requirements-airflow.txt
+RUN pip install --no-cache-dir "apache-airflow==3.1.8" -r /opt/airflow/requirements-airflow.txt \
+    -r /opt/airflow/requirements-dev.txt
 
 # Separate dbt env: dbt only
 RUN python -m venv /opt/airflow/dbt_venv \

@@ -11,7 +11,7 @@ from src.rag.embeddings import embed_text
 
 logger = logging.getLogger(__name__)
 
-def retrieve_relevent_chunks(
+def retrieve_relevant_chunks(
     query: str,
     top_k: int = 5,
     filter_by: dict | None = None,

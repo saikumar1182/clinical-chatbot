@@ -145,7 +145,7 @@ services:
           airflow pools set api_pool 5 "ClinicalTrials.gov — max 5 concurrent fetches" || true
 
           echo "=== Setting Airflow Variables ==="
-          airflow variables set clinical_conditions '["cancer", "vision", "urology", "kidney disease", "HIV/AIDS", "endocrine", "digestive", "diabetes", "cardiovascular", "alzheimer", "alcohol abuse and alcoholism"]' || true
+          airflow variables set clinical_conditions '["lung cancer", "diabetes"]' || true
           airflow variables set embed_batch_size '50' || true
 
           echo "=== Airflow init complete ✅ ==="

@@ -2,7 +2,9 @@
 FROM python:3.11-slim AS builder
 WORKDIR /build
 COPY requirements.txt .
+COPY requirements-dev.txt .
 RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir --user -r requirements-dev.txt
 
 # ── Stage 2: Production image ─────────────────────────────────
 FROM python:3.11-slim
@@ -18,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
 # Copy application code
 COPY app/ ./app/
 COPY src/ ./src/
+COPY tests/ ./tests/
 
 # Streamlit config
 RUN mkdir -p ~/.streamlit

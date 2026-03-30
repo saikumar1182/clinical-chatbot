@@ -16,7 +16,7 @@ from langchain_aws import ChatBedrock
 
 from src.llm.router import route_query, QueryRoute
 from src.prompts.prompts_registry import get_prompt
-from src.rag.retriever import retrieve_relevent_chunks
+from src.rag.retriever import retrieve_relevant_chunks
 
 
 logger = logging.getLogger(__name__)
@@ -136,7 +136,7 @@ def ask(
         logger.info("SQL Query executed: %s", sql_query)
         logger.info("SQL Result: %s", result)
     else:
-        docs = retrieve_relevent_chunks(
+        docs = retrieve_relevant_chunks(
             query=question,
             top_k=5,
             filter_by=filters,

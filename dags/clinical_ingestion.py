@@ -35,17 +35,8 @@ def clinical_ingestion():
     conditions = Variable.get(
         "clinical_conditions",
         default_var=[
-            "cancer",
-            "vision",
-            "urology",
-            "kidney disease",
-            "HIV/AIDS",
-            "endocrine",
-            "digestive",
+            "lung cancer",
             "diabetes",
-            "cardiovascular",
-            "alzheimer",
-            "alcohol abuse and alcoholism"
         ],
         deserialize_json=True,
     )
