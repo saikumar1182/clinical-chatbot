@@ -153,18 +153,22 @@ jobs:
           apache-airflow-providers-slack==9.8.0
 
       - name: Validate DAG Syntax (import tests)
+        env:
+          AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+          AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:///ci_test_airflow.db
+          AIRFLOW__CORE__FERNET_KEY: 81HqDtbqAywKSOumSha3BhWNOdQ26slT6K0YaZeZyPs=
+          AIRFLOW_VAR_CLINICAL_CONDITIONS: '["oncology"]'
         run: |
-          python -c "
+          airflow db migrate
+          python <<'PY'
           import os
           import sys
-          sys.path.insert(0, '.')
-          os.environ['AIRFLOW__CORE__LOAD_EXAMPLES'] = 'false'
-          os.environ['AIRFLOW__DATABASE__SQL_ALCHEMY_CONN'] = 'sqlite:////tmp/airflow.db'
-          os.environ['AIRFLOW__CORE__FERNET_KEY'] = '81HqDtbqAywKSOumSha3BhWNOdQ26slT6K0YaZeZyPs='
+          sys.path.insert(0, ".")
           from airflow.models import DagBag
-          dag_bag = DagBag(dag_folder='dags/', include_examples=False)
+
+          dag_bag = DagBag(dag_folder="dags/", include_examples=False)
           assert not dag_bag.import_errors, f"DAG import errors: {dag_bag.import_errors}"
-          print(f'✅ All {len(dag_bag.dags)} DAGs imported successfully: {list(dag_bag.dags.keys())}')
-          "
+          print(f"✅ All {len(dag_bag.dags)} DAGs imported successfully: {list(dag_bag.dags.keys())}")
+          PY
       - name: Run DAG unit tests
         run: pytest tests/test_dags.py -v --tb=short

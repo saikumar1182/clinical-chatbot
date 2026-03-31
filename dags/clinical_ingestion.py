@@ -4,11 +4,10 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any
 
-from airflow.decorators import dag, task
 from airflow.models import Variable
-from airflow.operators.trigger_dagrun import TriggerDagRunOperator
+from airflow.providers.standard.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
-from airflow.sdk import get_current_context
+from airflow.sdk import get_current_context, task, dag
 
 logger = logging.getLogger(__name__)
 
@@ -32,14 +31,17 @@ default_args = {
     tags=["clinical", "ingestion", "bronze"],
 )
 def clinical_ingestion():
-    conditions = Variable.get(
-        "clinical_conditions",
-        default_var=[
-            "lung cancer",
-            "diabetes",
+
+    @task(task_id="get_conditions")
+    def get_conditions() -> list[str]:
+        return Variable.get(
+            "clinical_conditions",
+            default_var=[
+                "lung cancer",
+                "diabetes",
         ],
         deserialize_json=True,
-    )
+        )
 
     @task(task_id="check_db_health")
     def check_db_health() -> bool:
@@ -140,10 +142,11 @@ def clinical_ingestion():
     )
 
     health = check_db_health()
+    conditions = get_conditions()
     condition_results = fetch_and_load.expand(condition=conditions)
     summary = summarise(results=condition_results)
 
-    health >> condition_results >> summary >> trigger_dbt
+    health >> conditions >> condition_results >> summary >> trigger_dbt
 
 
 clinical_ingestion()

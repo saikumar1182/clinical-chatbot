@@ -17,8 +17,8 @@ import os
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from airflow.decorators import dag
-from airflow.operators.trigger_dagrun import TriggerDagRunOperator
+from airflow.providers.standard.operators.trigger_dagrun import TriggerDagRunOperator
+from airflow.sdk import dag
 
 # ── Astronomer Cosmos imports ────────────────────────────────
 from cosmos import DbtTaskGroup, ProjectConfig, ProfileConfig, ExecutionConfig
