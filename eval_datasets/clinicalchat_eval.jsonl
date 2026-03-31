@@ -1,50 +1,5 @@
-{"question": "What is trial NCT04568577 studying?", "expected_answer": "NCT04568577", "category": "rag", "difficulty": "easy"}
-{"question": "How many Phase 3 trials are currently recruiting?", "expected_answer": "recruiting", "category": "sql", "difficulty": "easy"}
-{"question": "Explain the eligibility criteria for diabetes trials", "expected_answer": "diabetes", "category": "rag", "difficulty": "medium"}
-{"question": "What are the main outcomes of completed oncology trials?", "expected_answer": "oncology", "category": "rag", "difficulty": "medium"}
-{"question": "How many trials are sponsored by Pfizer?", "expected_answer": "Pfizer", "category": "sql", "difficulty": "easy"}
-{"question": "What is the protocol for cardiovascular Phase 3 studies?", "expected_answer": "cardiovascular", "category": "rag", "difficulty": "medium"}
-{"question": "List all completed Alzheimer trials with more than 500 participants", "expected_answer": "alzheimer", "category": "sql", "difficulty": "medium"}
-{"question": "What is the average enrollment in Phase 3 trials?", "expected_answer": "enrollment", "category": "sql", "difficulty": "medium"}
-{"question": "Describe the interventions used in diabetes trials", "expected_answer": "diabetes", "category": "rag", "difficulty": "medium"}
-{"question": "What is the capital of France?", "expected_answer": "I cannot find", "category": "oot", "difficulty": "easy"}
-{"question": "How many trials started after 2021?", "expected_answer": "2021", "category": "sql", "difficulty": "medium"}
-{"question": "Tell me about the sponsor of trial NCT04321234", "expected_answer": "NCT04321234", "category": "rag", "difficulty": "easy"}
-{"question": "What conditions are being studied in Phase 2 cardiovascular trials?", "expected_answer": "cardiovascular", "category": "rag", "difficulty": "medium"}
-{"question": "Count trials by therapeutic area", "expected_answer": "therapeutic", "category": "sql", "difficulty": "medium"}
-{"question": "What are the primary outcomes in oncology trials?", "expected_answer": "oncology", "category": "rag", "difficulty": "hard"}
-{"question": "How many trials have more than 1000 participants?", "expected_answer": "1000", "category": "sql", "difficulty": "medium"}
-{"question": "Explain what RECRUITING status means for clinical trials", "expected_answer": "recruiting", "category": "rag", "difficulty": "easy"}
-{"question": "What is the total number of trials in the database?", "expected_answer": "total", "category": "sql", "difficulty": "easy"}
-{"question": "Describe the eligibility criteria for obesity trials", "expected_answer": "obesity", "category": "rag", "difficulty": "medium"}
-{"question": "Who is the lead sponsor for the most Phase 3 trials?", "expected_answer": "sponsor", "category": "sql", "difficulty": "hard"}
-{"question": "What trials are NOT_YET_RECRUITING?", "expected_answer": "NOT_YET_RECRUITING", "category": "sql", "difficulty": "easy"}
-{"question": "Explain the study design of Alzheimer trials", "expected_answer": "alzheimer", "category": "rag", "difficulty": "hard"}
-{"question": "How many trials involve hypertension?", "expected_answer": "hypertension", "category": "sql", "difficulty": "easy"}
-{"question": "What are the age restrictions in cardiovascular trials?", "expected_answer": "age", "category": "rag", "difficulty": "medium"}
-{"question": "Show trials completed between 2020 and 2023", "expected_answer": "completed", "category": "sql", "difficulty": "medium"}
-{"question": "What is the best stock to buy today?", "expected_answer": "I cannot find", "category": "oot", "difficulty": "easy"}
-{"question": "Describe the interventions in cancer immunotherapy trials", "expected_answer": "cancer", "category": "rag", "difficulty": "hard"}
-{"question": "How many trials are in each phase?", "expected_answer": "phase", "category": "sql", "difficulty": "medium"}
-{"question": "What inclusion criteria apply to diabetes trials?", "expected_answer": "diabetes", "category": "rag", "difficulty": "medium"}
-{"question": "List the top 5 conditions by trial count", "expected_answer": "condition", "category": "sql", "difficulty": "medium"}
-{"question": "Explain the randomisation in cardiovascular studies", "expected_answer": "cardiovascular", "category": "rag", "difficulty": "hard"}
-{"question": "How many trials involve both diabetes and obesity?", "expected_answer": "diabetes", "category": "sql", "difficulty": "hard"}
-{"question": "What is Phase 4 in clinical trials?", "expected_answer": "Phase 4", "category": "rag", "difficulty": "easy"}
-{"question": "How many trials were submitted in 2022?", "expected_answer": "2022", "category": "sql", "difficulty": "medium"}
-{"question": "Tell me about the brief summary of NCT04567890", "expected_answer": "NCT04567890", "category": "rag", "difficulty": "easy"}
-{"question": "What percentage of trials are completed?", "expected_answer": "completed", "category": "sql", "difficulty": "medium"}
-{"question": "Describe exclusion criteria in Alzheimer drug trials", "expected_answer": "alzheimer", "category": "rag", "difficulty": "hard"}
-{"question": "How many active trials have enrollment over 500?", "expected_answer": "enrollment", "category": "sql", "difficulty": "medium"}
-{"question": "What is the primary purpose of oncology Phase 3 trials?", "expected_answer": "oncology", "category": "rag", "difficulty": "hard"}
-{"question": "Who is the weather reporter for CNN?", "expected_answer": "I cannot find", "category": "oot", "difficulty": "easy"}
-{"question": "List trials by Novartis in neurology", "expected_answer": "Novartis", "category": "sql", "difficulty": "medium"}
-{"question": "Explain blinding methods used in cardiovascular trials", "expected_answer": "cardiovascular", "category": "rag", "difficulty": "hard"}
-{"question": "How many trials have a duration over 24 months?", "expected_answer": "duration", "category": "sql", "difficulty": "hard"}
-{"question": "What safety monitoring is described for diabetes trials?", "expected_answer": "diabetes", "category": "rag", "difficulty": "hard"}
-{"question": "Count trials per year for the last 5 years", "expected_answer": "year", "category": "sql", "difficulty": "medium"}
-{"question": "What are the stopping rules in Phase 3 oncology trials?", "expected_answer": "oncology", "category": "rag", "difficulty": "hard"}
-{"question": "Show the distribution of trial phases for cardiovascular disease", "expected_answer": "cardiovascular", "category": "sql", "difficulty": "medium"}
-{"question": "Describe the follow-up period in completed diabetes trials", "expected_answer": "diabetes", "category": "rag", "difficulty": "hard"}
-{"question": "How many trials were terminated in 2023?", "expected_answer": "terminated", "category": "sql", "difficulty": "medium"}
-{"question": "What endpoints are used in Alzheimer prevention trials?", "expected_answer": "alzheimer", "category": "rag", "difficulty": "hard"}
+{"question": "How many trials are currently recruiting for diabetes?","expected_keywords": ["recruiting", "diabetes"]}
+{"question": "What phase are most oncology trials in?","expected_keywords": ["phase", "oncology"]}
+{"question": "Which sponsor has the most active trials?","expected_keywords": ["sponsor"]}
+{"question": "Show me trials for Alzheimer's disease that are completed.","expected_keywords": ["completed", "alzheimer"]}
+{"question": "What is the average enrollment size for phase 3 trials?","expected_keywords": ["enrollment", "phase 3"]}

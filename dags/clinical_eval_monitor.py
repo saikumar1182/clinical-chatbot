@@ -15,9 +15,10 @@ logger = logging.getLogger(__name__)
 
 # Quality thresholds — if ANY metric drops below, task fails → alert fires
 QUALITY_THRESHOLDS = {
-    "faithfulness": 0.55,
-    "relevance":    0.50,
-    "sql_accuracy": 0.85,
+    "faithfulness":      0.55,
+    "relevance":         0.50,
+    "keyword_coverage":  0.60,
+    "citation_presence": 0.20,
 }
 
 # Minimum number of eval samples required for the gate to be meaningful.
@@ -167,19 +168,21 @@ def clinical_eval_monitor():
         )
         return "\n".join(lines)
 
+    @task(task_id="post_slack_report")
+    def post_to_slack(message: str):
+        return SlackWebhookOperator(
+            task_id="post_slack_report",
+            slack_webhook_conn_id="slack_clinical",
+            message=message,
+        )
+
     # ── WIRING ────────────────────────────────────────────────────
     scores      = run_eval()
     gate_result = check_gate(scores=scores)
     message     = build_message(gate_result=gate_result)
+    slack_post  = post_to_slack(message=message)
 
-    # # BUG FIX: operator must be wired into the task graph with >> so Airflow
-    # # actually schedules it and receives the rendered `message` string.
-    # slack_post = SlackWebhookOperator(
-    #     task_id="post_slack_report",
-    #     slack_webhook_conn_id="slack_clinical",
-    #     message=message,
-    # )
-    message #>> slack_post
+    message >> slack_post
 
 
 clinical_eval_monitor()

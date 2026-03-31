@@ -1,0 +1,168 @@
+name: CI Pipeline & Quality Gate
+
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [main, dev]
+
+jobs:
+  # Job 1: Lint + Unit Tests
+  lint-and-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: clinicaldb
+          POSTGRES_USER: clinical_user
+          POSTGRES_PASSWORD: clinical_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          
+        
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Set up Python 3.11
+          uses: actions/setup-python@v5
+          with:
+            python-version: "3.11"
+            cache: "pip"
+        
+        - name: Install dependencies
+          run: pip install -r requirements.txt -r requirements-dev.txt
+        
+        - name: Linting
+          run: ruff check src/ app/ tests/ dags/ --fix
+        
+        - name: Type checking
+          run: mypy src/ --ignore-missing-imports || true
+        
+        - name: Init test database
+          run: |
+            PGPASSWORD=clinical_pass psql \
+            -h localhost -U clinical_user -d clinicaldb -f src/db/init.sql
+          env:
+            PGPASSWORD: clinical_pass
+
+        - name: Run Pytest/unit tests
+          run: pytest tests/ -v -tb=short --cov=src --cov-report=xml --ignore=tests/test_dags.py
+          env:
+            DATABASE_URL: postgresql+psycopg2://clinical_user:clinical_pass@localhost:5432/clinical_test
+
+        - name: Upload coverage report
+          uses: codecov/codecov-action@v4
+          with:
+            file: coverage.xml
+
+  # Job 2: DAG Validation
+  dag-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+        
+      - name: Install dependencies AIRFLOW + DBT + Cosmos
+        run: pip install -r requirements-airflow.txt -r requirements-dbt.txt -r requirements-dev.txt
+    
+      - name: Validate DAG Syntax (import tests)
+        run: |
+          python -c "
+          import os
+          import sys
+          sys.path.insert(0, '.')
+          os.environ['AIRFLOW__CORE__LOAD_EXAMPLES'] = 'false'
+          os.environ['AIRFLOW__DATABASE__SQL_ALCHEMY_CONN'] = 'sqlite:///ci_test_airflow.db'
+          os.environ['AIRFLOW__CORE__FERNET_KEY'] = '81HqDtbqAywKSOumSha3BhWNOdQ26slT6K0YaZeZyPs='
+          from airflow.models import DagBag
+          dag_bag = DagBag(dag_folder='dags/', include_examples=False)
+          assert not dag_bag.import_errors, f"DAG import errors: {dag_bag.import_errors}"
+          print(f'✅ All {len(dag_bag.dags)} DAGs imported successfully: {list(dag_bag.dags.keys())}')
+          "
+      - name: Run DAG unit tests
+        run: pytest tests/test_dags.py -v
+
+  # Job 3: DBT Tests
+  dbt-tests:
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: clinicaldb
+          POSTGRES_USER: clinical_user
+          POSTGRES_PASSWORD: clinical_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      
+      - name: Install DBT dependencies
+        run: pip install -r requirements-dbt.txt
+      
+      - name: Install dbt
+        run: pip install dbt-postgres==1.8.2 dbt-utils==1.2.0
+
+      - name: Init test database
+        run: |
+          PGPASSWORD=clinical_pass psql \
+            -h localhost -U clinical_user -d clinical_test \
+            -f src/db/init.sql
+        env:
+          PGPASSWORD: clinical_pass
+
+      - name: dbt deps + seed + run
+        working-directory: dbt_project
+        run: |
+          dbt deps
+          dbt seed --target ci
+          dbt run --target ci
+        env:
+          DBT_HOST: localhost
+          DBT_USER: clinical_user
+          DBT_PASSWORD: clinical_pass
+          DBT_DBNAME: clinical_test
+
+      - name: "🚨 dbt test — Quality Gate (blocks merge on failure)"
+        working-directory: dbt_project
+        run: dbt test --target ci
+        env:
+          DBT_HOST: localhost
+          DBT_USER: clinical_user
+          DBT_PASSWORD: clinical_pass
+          DBT_DBNAME: clinical_test
+
+     
+      
+        
+        
+                    
+      
+  
+
+

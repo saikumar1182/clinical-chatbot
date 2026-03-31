@@ -30,6 +30,7 @@ class ChatResponse:
     sql_query: str | None
     trace_id: str
     latency_ms: int
+    context: str = ""
 
 _llm: ChatBedrock | None = None
 
@@ -229,4 +230,5 @@ def ask(
         sql_query=sql_query,
         trace_id=trace_id,
         latency_ms=latency_ms,
+        context=context_text,
     )

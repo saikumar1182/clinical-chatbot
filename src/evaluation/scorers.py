@@ -12,6 +12,44 @@ from src.llm.bedrock_client import invoke_llm
 
 logger = logging.getLogger(__name__)
 
+# System prompt used for both LLM-as-judge scorers
+_JUDGE_SYSTEM_PROMPT = (
+    "You are a strict JSON-only evaluator. "
+    "Respond ONLY with a valid JSON object. "
+    "No explanation, no markdown, no extra text."
+)
+
+
+def _call_llm_judge(user_prompt: str) -> dict:
+    """
+    Call invoke_llm and parse the JSON response.
+
+    invoke_llm is a generator — must consume with "".join() to get the
+    full string. Returns {"score": 0.5, "reason": "..."} on any failure.
+    """
+    raw = ""
+    try:
+        # ── KEY FIX 1: correct argument name is user_prompt not prompt ────
+        # ── KEY FIX 2: invoke_llm is a generator → consume with "".join() ─
+        raw = "".join(
+            invoke_llm(
+                user_prompt=user_prompt,
+                system_prompt=_JUDGE_SYSTEM_PROMPT,
+                temperature=0.0,
+                max_tokens=100,
+            )
+        )
+
+        raw = raw.strip().replace("```json", "").replace("```", "").strip()
+        parsed = json.loads(raw)
+        return parsed
+
+    except json.JSONDecodeError as e:
+        logger.error("LLM judge — JSON parse failed: %s | raw=%r", e, raw)
+        return {"score": 0.5, "reason": "json parse error"}
+    except Exception as e:
+        logger.error("LLM judge — unexpected error: %s", e)
+        return {"score": 0.5, "reason": str(e)}
 
 def score_faithfulness(context: str, answer: str) -> float:
     """
@@ -25,26 +63,30 @@ def score_faithfulness(context: str, answer: str) -> float:
         The faithfulness score as a float between 0.0 and 1.0.
         A score below 0.75 indicates that the answer is not faithful to the context or contains hallucinations.
     """
-    prompt = f"""Rate from 0.0 to 1.0 whether the ANSWER is fully supported by the CONTEXT.
-1.0 = every claim in the answer is backed by the context.
-0.0 = the answer contains facts not present in the context (hallucination).
-
+    user_prompt = f"""You are an expert evaluator for a clinical trials question-answering system.
+ 
+Rate from 0.0 to 1.0 whether the ANSWER is fully supported by the CONTEXT.
+ 
+Scoring guide:
+  1.0 = every claim in the answer is backed by the context
+  0.7 = most claims are supported, minor unsupported details
+  0.5 = roughly half the claims are supported
+  0.3 = most claims are not in the context
+  0.0 = answer contains facts not present in the context (hallucination)
+ 
 CONTEXT:
 {context[:3000]}
-
+ 
 ANSWER:
 {answer[:1000]}
-
-Respond ONLY with valid JSON: {{"score": 0.0, "reason": "one sentence"}}
+ 
+Respond ONLY with valid JSON — no extra text, no markdown fences:
+{{"score": 0.0, "reason": "one concise sentence"}}
 """
     try:
-        raw_response = invoke_llm(prompt=prompt, temperature=0.0, max_tokens=100)
-
-        # Clean up the response
-        raw_response = raw_response.strip().replace("```json", "").replace("```", "").strip()
-        parsed = json.loads(raw_response)
-        score = float(parsed.get("score", 0.5))
-        # Ensure the score is between 0.0 and 1.0
+        result = _call_llm_judge(user_prompt)
+        score = float(result.get("score", 0.5))
+        logger.debug("Faithfulness score=%.3f reason=%s", score, result.get("reason", ""))
         return max(0.0, min(1.0, score))
     except Exception as e:
         logger.error(f"Failed to score faithfulness: {e}")
@@ -62,20 +104,28 @@ def score_answer_relevance(question: str, answer: str) -> float:
         The answer relevance score as a float between 0.0 and 1.0.
         A score below 0.75 indicates that the answer is not relevant to the question.
     """
-    prompt = f"""Rate from 0.0 to 1.0 whether the ANSWER directly addresses the QUESTION.
-1.0 = answer directly and completely addresses the question.
-0.0 = answer is off-topic or misses the point.
-
+    user_prompt = f"""You are an expert evaluator for a clinical trials question-answering system.
+ 
+Rate from 0.0 to 1.0 whether the ANSWER directly addresses the QUESTION.
+ 
+Scoring guide:
+  1.0 = answer directly and completely addresses the question
+  0.7 = answer addresses the question but misses some detail
+  0.5 = answer is partially relevant
+  0.3 = answer touches the topic but doesn't answer the question
+  0.0 = answer is off-topic or completely misses the point
+ 
 QUESTION: {question}
-
+ 
 ANSWER: {answer[:1000]}
-
-Respond ONLY with valid JSON: {{"score": 0.0, "reason": "one sentence"}}"""
+ 
+Respond ONLY with valid JSON — no extra text, no markdown fences:
+{{"score": 0.0, "reason": "one concise sentence"}}
+"""
     try:
-        raw_response = invoke_llm(prompt=prompt, temperature=0.0, max_tokens=100)
-        raw_response = raw_response.strip().replace("```json", "").replace("```", "").strip()
-        parsed = json.loads(raw_response)
-        score = float(parsed.get("score", 0.5))
+        result = _call_llm_judge(user_prompt)
+        score = float(result.get("score", 0.5))
+        logger.debug("Relevance score=%.3f reason=%s", score, result.get("reason", ""))
         return max(0.0, min(1.0, score))
     except Exception as e:
         logger.error(f"Failed to score answer relevance: {e}")
@@ -87,9 +137,16 @@ def score_citation_presence(answer: str, sources: list[dict]) -> float:
     Return 1.0, at least one citation(NCT ID) is present, otherwise 0.0.
     """
     if not sources:
+        logger.debug("Citation scorer — no sources provided, returning 0.0")
         return 0.0
+
     for source in sources:
-        nct_id = source.get("nct_id")
+        nct_id = source.get("nct_id", "")
         if nct_id and nct_id in answer:
+            logger.debug("Citation scorer — found %s in answer", nct_id)
             return 1.0
+
+    logger.debug(
+        "Citation scorer — none of %d NCT IDs found in answer", len(sources)
+    )
     return 0.0

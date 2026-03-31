@@ -50,7 +50,7 @@ def invoke_llm(
         request_body["system"] = system_prompt
     
     response = client.invoke_model_with_response_stream(
-        model_id=LLM_MODEL_ID,
+        modelId=LLM_MODEL_ID,
         contentType="application/json",
         accept="application/json",
         body=json.dumps(request_body),
@@ -80,7 +80,3 @@ def invoke_llm(
             logger.debug(f"Stream complete. Metrics: {stop_reason}")
 
     return "".join(full_text)
-
-    
-
-
