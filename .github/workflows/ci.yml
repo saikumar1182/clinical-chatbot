@@ -159,7 +159,7 @@ jobs:
           import sys
           sys.path.insert(0, '.')
           os.environ['AIRFLOW__CORE__LOAD_EXAMPLES'] = 'false'
-          os.environ['AIRFLOW__DATABASE__SQL_ALCHEMY_CONN'] = 'sqlite:///ci_test_airflow.db'
+          os.environ['AIRFLOW__DATABASE__SQL_ALCHEMY_CONN'] = 'sqlite:////tmp/airflow.db'
           os.environ['AIRFLOW__CORE__FERNET_KEY'] = '81HqDtbqAywKSOumSha3BhWNOdQ26slT6K0YaZeZyPs='
           from airflow.models import DagBag
           dag_bag = DagBag(dag_folder='dags/', include_examples=False)
