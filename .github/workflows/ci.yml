@@ -144,7 +144,7 @@ jobs:
           DBT_HOST: localhost
           DBT_USER: clinical_user
           DBT_PASSWORD: clinical_pass
-          DBT_DBNAME: clinical_db
+          DBT_DBNAME: clinicaldb
 
       - name: "🚨 dbt test — Quality Gate (blocks merge on failure)"
         working-directory: dbt_project
@@ -153,7 +153,7 @@ jobs:
           DBT_HOST: localhost
           DBT_USER: clinical_user
           DBT_PASSWORD: clinical_pass
-          DBT_DBNAME: clinical_db
+          DBT_DBNAME: clinicaldb
 
      
       
