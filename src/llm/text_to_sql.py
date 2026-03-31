@@ -10,8 +10,6 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_aws import ChatBedrock
 
-from src.db.connection import execute_query
-
 logger = logging.getLogger(__name__)
 
 TEXT_TO_SQL_PROMPT = PromptTemplate(
@@ -63,6 +61,7 @@ def execute_text_to_sql(question: str) -> tuple[str, str]:
     sql = sql_query.replace("```sql", "").replace("```", "").strip()
     
     try:
+        from src.db.connection import execute_query
         rows = execute_query(sql)
         result = str(rows[:50]) if rows else "No results found."
         logger.info(f"SQL query executed successfully: {sql}")
