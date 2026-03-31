@@ -155,7 +155,7 @@ jobs:
       - name: Validate DAG Syntax (import tests)
         env:
           AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-          AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:///ci_test_airflow.db
+          AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////tmp/ci_test_airflow.db
           AIRFLOW__CORE__FERNET_KEY: 81HqDtbqAywKSOumSha3BhWNOdQ26slT6K0YaZeZyPs=
           AIRFLOW_VAR_CLINICAL_CONDITIONS: '["oncology"]'
         run: |

@@ -3,7 +3,7 @@ import os
 import pytest
 
 os.environ.setdefault("AIRFLOW__CORE__LOAD_EXAMPLES", "false")
-os.environ.setdefault("AIRFLOW__DATABASE__SQL_ALCHEMY_CONN", "sqlite:///test_airflow.db")
+os.environ.setdefault("AIRFLOW__DATABASE__SQL_ALCHEMY_CONN", "sqlite:////tmp/test_airflow.db")
 os.environ.setdefault("AIRFLOW__CORE__FERNET_KEY", "81HqDtbqAywKSOumSha3BhWNOdQ26slT6K0YaZeZyPs=")
 
 
