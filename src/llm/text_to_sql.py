@@ -5,12 +5,18 @@ from __future__ import annotations
 
 import os
 import logging
+import boto3
 
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_aws import ChatBedrock
 
 logger = logging.getLogger(__name__)
+
+AWS_REGION = os.getenv("AWS_REGION", "eu-west-3")
+BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "eu.anthropic.claude-sonnet-4-5-20250929-v1:0")
+
+bedrock_client = boto3.client("bedrock-runtime", region_name=AWS_REGION)
 
 TEXT_TO_SQL_PROMPT = PromptTemplate(
     input_variables=["question"],
@@ -51,9 +57,10 @@ def execute_text_to_sql(question: str) -> tuple[str, str]:
     
     llm = ChatBedrock(
         provider="anthropic",
-        model_id=os.getenv("BEDROCK_MODEL_ID", "eu.anthropic.claude-sonnet-4-5-20250929-v1:0"),
+        model=BEDROCK_MODEL_ID,
+        region_name=AWS_REGION,
         model_kwargs={"temperature": 0.0, "max_tokens": 1024},
-        region_name=os.getenv("AWS_REGION", "eu-west-3"),
+        
     )
 
     chain = TEXT_TO_SQL_PROMPT | llm | StrOutputParser()

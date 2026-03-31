@@ -21,6 +21,11 @@ from src.rag.retriever import retrieve_relevant_chunks
 
 logger = logging.getLogger(__name__)
 
+AWS_REGION = os.getenv("AWS_REGION", "eu-west-3")
+BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "eu.anthropic.claude-sonnet-4-5-20250929-v1:0")
+
+bedrock_client = boto3.client("bedrock-runtime", region_name=AWS_REGION)
+
 @dataclass
 class ChatResponse:
     answer: str
@@ -40,14 +45,15 @@ _llm: ChatBedrock | None = None
 # top_p: Nucleus sampling. 0.1 = very conservative, 0.9 = very creative
 # top_k: Sample the top k most likely tokens in each step
 
+
 def _get_llm() -> ChatBedrock:
     global _llm
     if _llm is None:
         _llm = ChatBedrock(
             provider="anthropic",
-            model_id=os.getenv("BEDROCK_MODEL_ID", "eu.anthropic.claude-sonnet-4-5-20250929-v1:0"),
+            model=BEDROCK_MODEL_ID,
+            region_name=AWS_REGION,
             model_kwargs={"temperature": 0.1, "max_tokens": 1024, "top_k": 30},
-            region_name=os.getenv("AWS_REGION"),
         )
     return _llm
 
