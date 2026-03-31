@@ -1,0 +1,40 @@
+# Environment files
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE / editor
+.vscode/
+.idea/
+
+# dbt artifacts
+dbt_project/logs/
+dbt_project/target/
+dbt_project/dbt_packages/
+dbt_project/profiles.yml
+
+# Ignore hidden dbt local files, but keep important tracked files
+dbt_project/.*
+!dbt_project/.gitkeep
+
+# Project-specific Python cache dirs
+src/**/__pycache__/
+dags/**/__pycache__/
+prompts/**/__pycache__/
+llm/**/__pycache__/
+rag/**/__pycache__/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log

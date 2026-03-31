@@ -1,0 +1,21 @@
+[project]
+name = "clinical-chatbot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "apache-airflow>=3.1.8",
+    "apache-airflow-providers-postgres>=6.6.1",
+    "astronomer-cosmos>=1.13.1",
+    "dbt-postgres>=1.10.0",
+    "psycopg2-binary>=2.9.11",
+    "python-dotenv>=1.2.2",
+    "requests>=2.32.5",
+    "sqlalchemy>=1.4.52",
+]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+extraPaths = ["."]

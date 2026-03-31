@@ -1,0 +1,29 @@
+FROM apache/airflow:3.1.8-python3.12
+
+USER root
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential libpq-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+USER airflow
+
+COPY --chown=airflow:root requirements-airflow.txt /opt/airflow/requirements-airflow.txt
+COPY --chown=airflow:root requirements-dbt.txt /opt/airflow/requirements-dbt.txt
+COPY --chown=airflow:root requirements-dev.txt /opt/airflow/requirements-dev.txt
+COPY --chown=airflow:root tests/ /opt/airflow/tests/
+
+# Main Airflow env: keep Airflow + Cosmos here
+RUN pip install --no-cache-dir "apache-airflow==3.1.8" -r /opt/airflow/requirements-airflow.txt \
+    -r /opt/airflow/requirements-dev.txt
+
+# Separate dbt env: dbt only
+RUN python -m venv /opt/airflow/dbt_venv \
+    && /opt/airflow/dbt_venv/bin/pip install --no-cache-dir --upgrade pip \
+    && /opt/airflow/dbt_venv/bin/pip install --no-cache-dir -r /opt/airflow/requirements-dbt.txt \
+    && /opt/airflow/dbt_venv/bin/dbt --version \
+    && rm -f /opt/airflow/requirements-airflow.txt /opt/airflow/requirements-dbt.txt
+
+ENV DBT_VENV=/opt/airflow/dbt_venv
+# Intentionally do NOT prepend DBT_VENV/bin to PATH
+# ENV PATH="/opt/airflow/dbt_venv/bin:${PATH}"

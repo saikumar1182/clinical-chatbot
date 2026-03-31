@@ -1,0 +1,5 @@
+{"question": "How many trials are currently recruiting for diabetes?","expected_keywords": ["recruiting", "diabetes"]}
+{"question": "What phase are most oncology trials in?","expected_keywords": ["phase", "oncology"]}
+{"question": "Which sponsor has the most active trials?","expected_keywords": ["sponsor"]}
+{"question": "Show me trials for Alzheimer's disease that are completed.","expected_keywords": ["completed", "alzheimer"]}
+{"question": "What is the average enrollment size for phase 3 trials?","expected_keywords": ["enrollment", "phase 3"]}

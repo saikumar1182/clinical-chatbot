@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: trials_enriched
+    description: >
+      Gold layer: analytics-ready, enriched clinical trial records.
+      One row per NCT ID. Includes embedding_text column used by
+      the RAG pipeline to generate pgvector embeddings.
+    config:
+      tags: ['gold', 'daily']
+    columns:
+      - name: nct_id
+        tests: [unique, not_null]
+      - name: title
+        tests: [not_null]
+      - name: embedding_text
+        description: "Pre-built text for LLM embedding — must be non-null"
+        tests: [not_null]
