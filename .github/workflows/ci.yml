@@ -55,7 +55,7 @@ jobs:
         - name: Run Pytest/unit tests
           run: pytest tests/ -v --tb=short --cov=src --cov-report=xml --ignore=tests/test_dags.py
           env:
-            DATABASE_URL: postgresql+psycopg2://clinical_user:clinical_pass@localhost:5432/clinical_test
+            DATABASE_URL: postgresql+psycopg2://clinical_user:clinical_pass@localhost:5432/clinicaldb
 
         - name: Upload coverage report
           uses: codecov/codecov-action@v6
@@ -129,7 +129,7 @@ jobs:
       - name: Init test database
         run: |
           PGPASSWORD=clinical_pass psql \
-            -h localhost -U clinical_user -d clinical_test \
+            -h localhost -U clinical_user -d clinicaldb \
             -f src/db/init.sql
         env:
           PGPASSWORD: clinical_pass
@@ -144,7 +144,7 @@ jobs:
           DBT_HOST: localhost
           DBT_USER: clinical_user
           DBT_PASSWORD: clinical_pass
-          DBT_DBNAME: clinical_test
+          DBT_DBNAME: clinical_db
 
       - name: "🚨 dbt test — Quality Gate (blocks merge on failure)"
         working-directory: dbt_project
@@ -153,7 +153,7 @@ jobs:
           DBT_HOST: localhost
           DBT_USER: clinical_user
           DBT_PASSWORD: clinical_pass
-          DBT_DBNAME: clinical_test
+          DBT_DBNAME: clinical_db
 
      
       
