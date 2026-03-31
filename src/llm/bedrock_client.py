@@ -20,8 +20,8 @@ import boto3
 
 logger = logging.getLogger(__name__)
 
-AWS_REGION = os.getenv("AWS_REGION")
-LLM_MODEL_ID = os.getenv("BEDROCK_MODEL_ID")
+AWS_REGION = os.getenv("AWS_REGION", "eu-west-3")
+LLM_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "eu.anthropic.claude-sonnet-4-5-20250929-v1:0")
 
 
 @lru_cache(maxsize=1)

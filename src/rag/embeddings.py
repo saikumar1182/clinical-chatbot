@@ -14,6 +14,8 @@ from src.db.connection import engine, execute_query # Database connection
 
 logger = logging.getLogger(__name__)
 
+AWS_REGION = os.getenv("AWS_REGION", "eu-west-3")
+EMBEDDING_MODEL_ID = os.getenv("EMBEDDING_MODEL_ID", "amazon.titan-embed-text-v2:0")
 
 SPLITTER = RecursiveCharacterTextSplitter(
     separators=["\n\n", "\n", ".", " "],
@@ -22,11 +24,11 @@ SPLITTER = RecursiveCharacterTextSplitter(
     length_function=len,
 )
 
-client = boto3.client("bedrock-runtime", region_name=os.getenv("AWS_REGION"))
+client = boto3.client("bedrock-runtime", region_name=AWS_REGION)
 
 def embed_text(text: str) -> list[float]:
     response = client.invoke_model(
-        modelId = "amazon.titan-embed-text-v2:0",
+        modelId = EMBEDDING_MODEL_ID,
         body = json.dumps({
             "inputText": text,
             "normalize": True
