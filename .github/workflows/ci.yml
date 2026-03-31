@@ -163,6 +163,7 @@ jobs:
           AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////tmp/ci_test_airflow.db
           AIRFLOW__CORE__FERNET_KEY: 81HqDtbqAywKSOumSha3BhWNOdQ26slT6K0YaZeZyPs=
           AIRFLOW_VAR_CLINICAL_CONDITIONS: '["oncology"]'
+          AIRFLOW_VAR_DBT_TARGET: "ci"
         run: |
           airflow db migrate
           python <<'PY'
