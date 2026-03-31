@@ -9,6 +9,7 @@ from __future__ import annotations
 import os
 import json
 import logging
+from collections.abc import Generator
 
 # lru_cache is used for memoization to cache the results of function calls.
 # This is useful for functions that are called multiple times with the same arguments.

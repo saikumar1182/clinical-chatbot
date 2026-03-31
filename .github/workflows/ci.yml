@@ -40,7 +40,7 @@ jobs:
           run: pip install -r requirements.txt -r requirements-dev.txt
         
         - name: Linting
-          run: ruff check src/ app/ tests/ dags/ --fix
+          run: ruff check src/ app/ tests/ dags/
         
         - name: Type checking
           run: mypy src/ --ignore-missing-imports || true
@@ -123,10 +123,7 @@ jobs:
           python-version: "3.11"
       
       - name: Install DBT dependencies
-        run: pip install -r requirements-dbt.txt
-      
-      - name: Install dbt
-        run: pip install dbt-postgres==1.8.2 dbt-utils==1.2.0
+        run: pip install -r requirements-dbt.txt -r requirements-dev.txt
 
       - name: Init test database
         run: |
