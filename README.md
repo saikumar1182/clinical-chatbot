@@ -21,7 +21,7 @@ ClinicalTrialsChatBot is an AI-powered application designed to help users find a
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/saikumar1182/clinical-chatbot.git
    cd clinical-chatbot
    ```
 
