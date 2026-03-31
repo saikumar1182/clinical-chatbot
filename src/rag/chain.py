@@ -9,6 +9,7 @@ import logging
 import time
 import uuid
 from dataclasses import dataclass
+import boto3
 
 from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
 from langchain_core.output_parsers import StrOutputParser
