@@ -117,7 +117,7 @@ jobs:
           DBT_HOST: localhost
           DBT_USER: ${{ vars.POSTGRES_USER }}
           DBT_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          DBT_DBNAME: ${{ vars.DBT_DBNAME }}
+          DBT_DBNAME: ${{ vars.POSTGRES_DB }}
 
       - name: "🚨 dbt test — Quality Gate (blocks merge on failure)"
         working-directory: dbt_project
@@ -125,7 +125,7 @@ jobs:
           DBT_HOST: localhost
           DBT_USER: ${{ vars.POSTGRES_USER }}
           DBT_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          DBT_DBNAME: ${{ vars.DBT_DBNAME }}
+          DBT_DBNAME: ${{ vars.POSTGRES_DB }}
         run: dbt test --target ci
 
   # Job 3: DAG Validation
