@@ -4,7 +4,6 @@ from unittest.mock import patch
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage
 from langchain_core.runnables import RunnableLambda
-from src.llm.text_to_sql import execute_text_to_sql
 
 
 class TestRetriever:
@@ -17,8 +16,8 @@ class TestRetriever:
                 "similarity": 0.9,
             },
         ]
-        with patch("src.rag.retriever.embed_text", return_value=[0.1] * 1024), \
-             patch("src.rag.retriever.execute_query", return_value=mock_rows):
+        with patch("src.rag.embeddings.embed_text", return_value=[0.1] * 1024), \
+             patch("src.db.connection.execute_query", return_value=mock_rows):
             from src.rag.retriever import retrieve_relevant_chunks
             docs = retrieve_relevant_chunks("diabetes Phase 3 trials")
             assert len(docs) == 1
@@ -27,9 +26,10 @@ class TestRetriever:
             assert docs[0].metadata["status"] == "RECRUITING"
             assert docs[0].metadata["similarity"] == 0.9
     
+
     def test_retrieve_no_results(self):
-        with patch("src.rag.embeddings.embed_text", return_value = [0.1] * 1024), \
-             patch("src.db.connection.execute_query", return_value = []):
+        with patch("src.rag.embeddings.embed_text", return_value=[0.1] * 1024), \
+             patch("src.db.connection.execute_query", return_value=[]):
             from src.rag.retriever import retrieve_relevant_chunks
             docs = retrieve_relevant_chunks("random query")
             assert docs == []
@@ -73,7 +73,7 @@ class TestPromptRegistry:
 
 class TestTextToSql:
 
-    @patch("src.llm.text_to_sql.execute_query")
+    @patch("src.db.connection.execute_query")
     @patch("src.llm.text_to_sql.ChatBedrock")
     def test_generates_valid_sql(self, mock_bedrock, mock_execute_query):
         # Use RunnableLambda so LangChain's | chain works end-to-end
@@ -81,19 +81,21 @@ class TestTextToSql:
         mock_bedrock.return_value = RunnableLambda(lambda _: AIMessage(content=sql_text))
         mock_execute_query.return_value = [{"count": 42}]
 
+        from src.llm.text_to_sql import execute_text_to_sql
         result, sql = execute_text_to_sql("how many trials are recruiting?")
 
         assert "SELECT" in sql.upper()
         assert "RECRUITING" in sql.upper()
         assert "42" in result
 
-    @patch("src.llm.text_to_sql.execute_query")
+    @patch("src.db.connection.execute_query")
     @patch("src.llm.text_to_sql.ChatBedrock")
     def test_returns_no_results_when_db_empty(self, mock_bedrock, mock_execute_query):
         sql_text = "SELECT * FROM gold.trials_enriched WHERE status = 'COMPLETED';"
         mock_bedrock.return_value = RunnableLambda(lambda _: AIMessage(content=sql_text))
         mock_execute_query.return_value = []
-
+        
+        from src.llm.text_to_sql import execute_text_to_sql
         result, sql = execute_text_to_sql("show completed trials")
 
         assert result == "No results found."

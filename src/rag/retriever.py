@@ -3,10 +3,7 @@ from __future__ import annotations
 import json
 import logging
 
-from langchain_core.documents import Document 
-
-from src.db.connection import execute_query
-from src.rag.embeddings import embed_text
+from langchain_core.documents import Document
 
 
 logger = logging.getLogger(__name__)
@@ -29,7 +26,7 @@ def retrieve_relevant_chunks(
     Returns:
         List of relevant Document objects.
     """
-    
+    from src.rag.embeddings import embed_text
     query_embedding = embed_text(query)
     params: dict = {
         "query_embedding": str(query_embedding),
@@ -46,6 +43,7 @@ def retrieve_relevant_chunks(
     
     where_extra = (" AND " + " AND ".join(filter_clauses)) if filter_clauses else ""
 
+    from src.db.connection import execute_query
     data_rows = execute_query(
         f"""
         SELECT 

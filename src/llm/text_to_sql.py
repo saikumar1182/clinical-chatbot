@@ -58,7 +58,7 @@ def execute_text_to_sql(question: str) -> tuple[str, str]:
     llm = ChatBedrock(
         provider="anthropic",
         model=BEDROCK_MODEL_ID,
-        region_name=AWS_REGION,
+        client=bedrock_client,
         model_kwargs={"temperature": 0.0, "max_tokens": 1024},
         
     )
@@ -78,8 +78,3 @@ def execute_text_to_sql(question: str) -> tuple[str, str]:
         return sql, f"Error: {str(e)}"
     
     return result, sql
-    
-    
-    
-        
-

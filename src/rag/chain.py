@@ -53,7 +53,7 @@ def _get_llm() -> ChatBedrock:
         _llm = ChatBedrock(
             provider="anthropic",
             model=BEDROCK_MODEL_ID,
-            region_name=AWS_REGION,
+            client=bedrock_client,
             model_kwargs={"temperature": 0.1, "max_tokens": 1024, "top_k": 30},
         )
     return _llm

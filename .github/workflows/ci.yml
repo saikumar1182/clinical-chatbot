@@ -20,7 +20,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres"
+          --health-cmd "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -43,7 +43,7 @@ jobs:
           run: ruff check src/ app/ tests/ dags/ --fix
         
         - name: Type checking
-          run: mypy src/ --ignore-missing-imports || true
+          run: mypy src/ --ignore-missing-imports
         
         - name: Init test database
           run: |
@@ -93,7 +93,7 @@ jobs:
           print(f'✅ All {len(dag_bag.dags)} DAGs imported successfully: {list(dag_bag.dags.keys())}')
           "
       - name: Run DAG unit tests
-        run: pytest tests/test_dags.py -v
+        run: pytest tests/test_dags.py -v --tb=short
 
   # Job 3: DBT Tests
   dbt-tests:
@@ -109,7 +109,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
