@@ -35,10 +35,6 @@ airflow-dags-list:     ## List all registered DAGs
 eval:                  ## Run Weave eval (or trigger DAG 4)
 	docker compose exec airflow-scheduler airflow dags trigger clinical_eval_monitor
 
-# ── Database ─────────────────────────────────────────────────
-psql:                  ## Open psql shell on clinicalchat DB
-	docker compose exec postgres psql -U clinical_user -d clinicaldb
-
 # ── Tests ─────────────────────────────────────────────────────
 test:                  ## Run all pytest tests including DAG tests	
 	docker compose run --rm app pytest tests/ -v --tb=short -k "not test_dags"

@@ -7,7 +7,7 @@ clinical_chat:
       port: "{{ env_var('DBT_PORT', '5432') | int }}"
       user: "{{ env_var('DBT_USER', 'clinical_user') }}"
       password: "{{ env_var('DBT_PASSWORD', 'clinical_pass') }}"
-      dbname: "{{ env_var('DBT_DBNAME', 'clinical') }}"
+      dbname: "{{ env_var('DBT_DBNAME', 'clinicaldb') }}"
       schema: silver
       threads: 4
       keepalives_idle: 0

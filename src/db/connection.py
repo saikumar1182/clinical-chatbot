@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 # ─────────────────────────────────────────────────────────────
 # DATABASE URL — resolves from env with sensible local default
 # ─────────────────────────────────────────────────────────────
-DATABASE_URL = os.getenv("DATABASE_URL","postgresql://clinical_user:clinical_pass@localhost:5432/clinicaldb")
+DATABASE_URL = os.getenv("DATABASE_URL",f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@localhost:5432/{os.getenv('POSTGRES_DB')}")
 
 # ─────────────────────────────────────────────────────────────
 # ENGINE — connection pool shared across the process

@@ -14,13 +14,13 @@ jobs:
       postgres:
         image: pgvector/pgvector:pg16
         env:
-          POSTGRES_DB: clinicaldb
-          POSTGRES_USER: clinical_user
-          POSTGRES_PASSWORD: clinical_pass
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"
+          --health-cmd "pg_isready -U ${{ vars.POSTGRES_USER }} -d ${{ vars.POSTGRES_DB }}"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -48,17 +48,17 @@ jobs:
           run: mypy src/ --ignore-missing-imports
         
         - name: Init test database
-          run: |
-            PGPASSWORD=clinical_pass psql \
-            -h localhost -U clinical_user -d clinicaldb -f src/db/init.sql
           env:
-            PGPASSWORD: clinical_pass
+            PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          run: |
+            psql \
+            -h localhost -U ${{ vars.POSTGRES_USER }} -d ${{ vars.POSTGRES_DB }} -f src/db/init.sql
 
         - name: Run Pytest/unit tests
           run: pytest tests/ -v --tb=short --cov=src --cov-report=xml --ignore=tests/test_dags.py
           env:
             AWS_REGION: eu-west-3
-            DATABASE_URL: postgresql+psycopg2://clinical_user:clinical_pass@localhost:5432/clinicaldb
+            DATABASE_URL: postgresql+psycopg2://${{ vars.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ vars.POSTGRES_DB }}
 
         - name: Upload coverage report
           uses: codecov/codecov-action@v6
@@ -73,9 +73,9 @@ jobs:
       postgres:
         image: pgvector/pgvector:pg16
         env:
-          POSTGRES_DB: clinicaldb
-          POSTGRES_USER: clinical_user
-          POSTGRES_PASSWORD: clinical_pass
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         ports:
           - 5432:5432
         options: >-
@@ -100,12 +100,12 @@ jobs:
         run: pip install -r requirements-dbt.txt
 
       - name: Init test database
-        run: |
-          PGPASSWORD=clinical_pass psql \
-            -h localhost -U clinical_user -d clinicaldb \
-            -f src/db/init.sql
         env:
-          PGPASSWORD: clinical_pass
+          PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: |
+          psql \
+            -h localhost -U ${{ vars.POSTGRES_USER }} -d ${{ vars.POSTGRES_DB }} \
+            -f src/db/init.sql
 
       - name: dbt deps + seed + run
         working-directory: dbt_project
@@ -115,17 +115,17 @@ jobs:
           dbt run --target ci
         env:
           DBT_HOST: localhost
-          DBT_USER: clinical_user
-          DBT_PASSWORD: clinical_pass
-          DBT_DBNAME: clinicaldb
+          DBT_USER: ${{ vars.POSTGRES_USER }}
+          DBT_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          DBT_DBNAME: ${{ vars.DBT_DBNAME }}
 
       - name: "🚨 dbt test — Quality Gate (blocks merge on failure)"
         working-directory: dbt_project
         env:
           DBT_HOST: localhost
-          DBT_USER: clinical_user
-          DBT_PASSWORD: clinical_pass
-          DBT_DBNAME: clinicaldb
+          DBT_USER: ${{ vars.POSTGRES_USER }}
+          DBT_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          DBT_DBNAME: ${{ vars.DBT_DBNAME }}
         run: dbt test --target ci
 
   # Job 3: DAG Validation
@@ -161,7 +161,7 @@ jobs:
         env:
           AIRFLOW__CORE__LOAD_EXAMPLES: "false"
           AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////tmp/ci_test_airflow.db
-          AIRFLOW__CORE__FERNET_KEY: 81HqDtbqAywKSOumSha3BhWNOdQ26slT6K0YaZeZyPs=
+          AIRFLOW__CORE__FERNET_KEY: ${{ vars.AIRFLOW_FERNET_KEY }}
           AIRFLOW_VAR_CLINICAL_CONDITIONS: '["oncology"]'
           AIRFLOW_VAR_DBT_TARGET: "ci"
         run: |
