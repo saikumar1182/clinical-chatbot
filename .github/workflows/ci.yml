@@ -124,7 +124,7 @@ jobs:
           python-version: "3.11"
       
       - name: Install DBT dependencies
-        run: pip install dbt-postgres==1.7.17 dbt-utils==1.3.3
+        run: pip install -r requirements-dbt.txt
 
       - name: Init test database
         run: |
