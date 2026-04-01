@@ -245,7 +245,7 @@ Traces are visible in the Weave UI and AWS CloudWatch captures Bedrock inference
 
 ### Screenshots
 ![Weave UI Traces](images/Weave_traces.png)
-![AWS CloudWatch Bedrock Logs](images/AWS_CloudWatch_Bedrock_logs.png)
+![AWS CloudWatch Bedrock Logs](images/AWS_Cloudwatch_Bedrock_logs.png)
 ![Airflow UI with dags](images/Airflow_Dags.png)
 ![Streamlit Analytics Page](images/Streamlit_analytics_dashboard.png)
 ---
